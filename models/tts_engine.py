@@ -199,10 +199,16 @@ class TTSEngine:
         # Parse emotion parameters
         if model_name in ["Fish Audio (S2 Pro)", "Chatterbox-Turbo"]:
             processed_text, speed_mod = self._parse_emotion(text, vibe, model_category="tag")
-            print(f"[TTSEngine] Tag-capable engine. Formatted script: \"{processed_text}\"")
+            try:
+                print(f"[TTSEngine] Tag-capable engine. Formatted script: \"{processed_text}\"")
+            except UnicodeEncodeError:
+                print(f"[TTSEngine] Tag-capable engine. Formatted script (Unicode): \"{processed_text.encode('ascii', errors='replace').decode('ascii')}\"")
         else:
             processed_text, instruction, speed_mod = self._parse_emotion(text, vibe, model_category="instruction")
-            print(f"[TTSEngine] Instruction-based engine. Isolated instruction prompt: \"{instruction}\"")
+            try:
+                print(f"[TTSEngine] Instruction-based engine. Isolated instruction prompt: \"{instruction}\"")
+            except UnicodeEncodeError:
+                print(f"[TTSEngine] Instruction-based engine. Isolated instruction prompt (Unicode): \"{instruction.encode('ascii', errors='replace').decode('ascii')}\"")
             
         # Apply emotional pacing speed modifications
         target_speed = pacing_speed * speed_mod
