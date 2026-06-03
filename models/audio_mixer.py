@@ -1,4 +1,5 @@
 import os
+import math
 from pydub import AudioSegment
 
 # Dynamically add local ffmpeg to PATH so pydub can find it
@@ -14,12 +15,20 @@ for ffmpeg_dir in ffmpeg_dirs:
 
 class AudioMixer:
     @staticmethod
-    def mix_voice_with_bg(voice_path, bg_music_path, output_path, volume_reduction=-18):
+    def pct_to_db(pct):
+        """Converts percentage volume (0-100) to decibels gain."""
+        if pct <= 0:
+            return -100
+        # 100% -> 0dB, 50% -> -6dB, 10% -> -20dB, etc.
+        return 20 * math.log10(pct / 100.0)
+
+    @classmethod
+    def mix_voice_with_bg(cls, voice_path, bg_music_path, output_path, voice_vol_pct=100, bg_vol_pct=40, ducking_threshold=15):
         """
-        Mixes the generated voice (from voice_path) with a background music track (bg_music_path).
-        Lowers the background music volume by volume_reduction (in dB), loops the background music if
-        it is shorter than the voice, crops the background music to match the voice length,
-        and saves the mixed result to output_path.
+        Mixes voice and background music using percentage volumes and ducking.
+        - voice_vol_pct: 0-100% volume for the voice.
+        - bg_vol_pct: 0-100% volume for the background.
+        - ducking_threshold: additional dB reduction for background music when mixed.
         """
         if not os.path.exists(voice_path):
             raise FileNotFoundError(f"Voice file not found at {voice_path}")
@@ -30,10 +39,22 @@ class AudioMixer:
         voice = AudioSegment.from_file(voice_path)
         bg_music = AudioSegment.from_file(bg_music_path)
         
-        # Lower background music volume so voice is prominent
-        bg_music = bg_music + volume_reduction
-        
-        # Loop background music if it's shorter than the voice
+        # Apply voice volume adjustment
+        voice_db = cls.pct_to_db(voice_vol_pct)
+        if voice_db > -100:
+            voice = voice + voice_db
+        else:
+            voice = voice - 100  # Silence
+            
+        # Apply background music volume adjustment (with ducking reduction)
+        # Higher ducking_threshold = background is ducked further down relative to voice
+        total_bg_reduction_db = cls.pct_to_db(bg_vol_pct) - ducking_threshold
+        if total_bg_reduction_db > -100:
+            bg_music = bg_music + total_bg_reduction_db
+        else:
+            bg_music = bg_music - 100
+            
+        # Loop background music if it is shorter than the voice
         voice_len = len(voice)
         bg_len = len(bg_music)
         

@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Slogan & Hook Text-to-Audio (MP3) Generator</title>
-    <!-- Inter Font from Google Fonts -->
+    <title>Industrial AI Ad-Campaign Hook & Audio Generator</title>
+    <!-- Outfit & Inter Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
@@ -15,143 +15,253 @@
         <!-- Header -->
         <header class="app-header">
             <div class="logo">
-                <span class="logo-icon">🎙️</span>
-                <h1>SonicSlogan</h1>
+                <span class="logo-icon">🔊</span>
+                <h1>AdVocalist <span class="badge">AI STUDIO</span></h1>
             </div>
-            <p class="subtitle">Generate high-impact audio hooks & slogans with state-of-the-art local TTS engines</p>
+            <p class="subtitle">Industrial AI Ad-Campaign Hook & Audio Generator featuring an emotional, multi-model engine dashboard</p>
         </header>
 
         <!-- Main Dashboard Layout -->
         <main class="dashboard-grid">
-            
-            <!-- Left Panel: Inputs -->
-            <section class="panel input-panel">
-                <h2 class="panel-title">Configuration</h2>
+            <!-- Left Column: Settings and Console -->
+            <form id="generator-form" class="generator-form" enctype="multipart/form-data">
                 
-                <form id="generator-form" class="generator-form">
-                    <!-- Textarea Slogan -->
+                <!-- Section 1: Script & Language -->
+                <section class="panel input-panel">
+                    <h2 class="panel-title"><span class="step-num">1</span> Campaign Script & Language</h2>
+                    
                     <div class="form-group">
-                        <label for="slogan-text">Slogan / Hook Text</label>
+                        <label for="script-text">Campaign Script / Audio Hook</label>
                         <textarea 
-                            id="slogan-text" 
+                            id="script-text" 
                             name="text" 
                             rows="4" 
-                            placeholder="Enter your company slogan or hook here... For example: 'Innovating the future, one byte at a time!'"
+                            placeholder="Enter ad campaign script here... Fully supports English, Bangla, and Mixed Bilingual (Banglish) script variants."
                             required></textarea>
                     </div>
 
-                    <!-- Language Selection -->
-                    <div class="form-group">
-                        <label for="language-select">Language Selection</label>
-                        <select id="language-select" name="language" required>
-                            <option value="" disabled selected>Select Language</option>
-                            <option value="English">English</option>
-                            <option value="Bangla">Bangla</option>
-                        </select>
-                    </div>
-
-                    <!-- Engine Selection (Dynamic) -->
-                    <div class="form-group">
-                        <label for="engine-select">TTS Engine</label>
-                        <select id="engine-select" name="engine" required disabled>
-                            <option value="" disabled selected>Choose language first</option>
-                        </select>
-                    </div>
-
-                    <!-- Dynamic Sub-option: Background Vibe (Only for Kokoro) -->
-                    <div id="vibe-container" class="form-group hidden-element">
-                        <label for="vibe-select">Background Vibe (Music Bed)</label>
-                        <select id="vibe-select" name="background_vibe">
-                            <option value="None">Voice Only (No Background Music)</option>
-                            <option value="Upbeat">Upbeat & Energetic (Stock Loop)</option>
-                            <option value="Chill">Chill & Evolving (Stock Loop)</option>
-                        </select>
-                        <small class="vibe-help">Pydub will overlay and mix the background music with the generated voice.</small>
-                    </div>
-
-                    <!-- Dynamic Sub-option: Voice Preset (Only for Kokoro) -->
-                    <div id="voice-container" class="form-group hidden-element">
-                        <label for="voice-select">Voice Model Style</label>
-                        <select id="voice-select" name="voice">
-                            <option value="af_heart">American Female (Heart - Smooth)</option>
-                            <option value="af_nicole">American Female (Nicole - Expressive)</option>
-                            <option value="am_adam">American Male (Adam - Energetic)</option>
-                            <option value="bf_emma">British Female (Emma - Formal)</option>
-                            <option value="bm_george">British Male (George - Clear)</option>
-                        </select>
-                    </div>
-
-                    <!-- Bark Expression Tags Tip -->
-                    <div id="bark-tip" class="tip-box hidden-element">
-                        <div class="tip-header">
-                            <span class="tip-icon">💡</span>
-                            <strong>Bark Expressive Tags:</strong>
+                    <div class="form-group-row">
+                        <div class="form-group">
+                            <label for="language-select">Primary Language</label>
+                            <select id="language-select" name="language" required>
+                                <option value="" disabled selected>Select Language Mode</option>
+                                <option value="English">English</option>
+                                <option value="Bangla">Bangla (বাঙলা)</option>
+                                <option value="Bilingual Mix">Bilingual Mix (Banglish)</option>
+                            </select>
                         </div>
-                        <p class="tip-content">
-                            You can add expressive and non-verbal cues directly to your text like: 
-                            <code>[laughs]</code>, <code>[clears throat]</code>, <code>[sighs]</code>, <code>[whispers]</code>, or musical notation like <code>♪ jingle ♪</code>.
-                        </p>
                     </div>
+                </section>
 
-                    <!-- Submit Button -->
-                    <button type="submit" id="submit-btn" class="submit-btn">
-                        <span class="btn-text">Generate Audio (MP3)</span>
-                        <span class="spinner hidden-element"></span>
-                    </button>
-                </form>
-            </section>
-
-            <!-- Right Panel: Outputs -->
-            <section class="panel output-panel">
-                <h2 class="panel-title">Audio Output</h2>
-                
-                <div id="output-state-empty" class="output-state">
-                    <div class="empty-graphic">🎧</div>
-                    <h3>Ready for Generation</h3>
-                    <p>Select your language, write your slogan, and click generate to preview your audio output.</p>
-                </div>
-
-                <div id="output-state-loading" class="output-state hidden-element">
-                    <div class="loading-graphic">
-                        <div class="ripple-wave"></div>
-                        <div class="ripple-wave"></div>
-                        <div class="ripple-wave"></div>
-                    </div>
-                    <h3>Synthesizing Voice...</h3>
-                    <p id="loading-status-text">Using AI models to render your text into professional audio. Please wait...</p>
-                    <div class="warning-alert">
-                        <strong>First run note:</strong> The system may take a few minutes to download Hugging Face model weights (Bark/MMS/Kokoro) to your local cache.
-                    </div>
-                </div>
-
-                <div id="output-state-result" class="output-state hidden-element">
-                    <div class="success-graphic">✅</div>
-                    <h3>Audio Render Complete</h3>
-                    <p id="result-meta-text">Synthesized successfully. Ready to preview and download.</p>
+                <!-- Section 2: Global Emotional Control Suite -->
+                <section class="panel emotional-panel">
+                    <h2 class="panel-title"><span class="step-num">2</span> Ad Emotional Control Suite</h2>
                     
-                    <!-- Audio Player -->
-                    <div class="audio-player-wrapper">
-                        <audio id="audio-preview" controls></audio>
+                    <div class="form-group">
+                        <label for="vibe-select">Campaign Vibe Preset</label>
+                        <select id="vibe-select" name="vibe">
+                            <option value="corporate" selected>Confident / Corporate (Professional & Clear)</option>
+                            <option value="excited">High Excitement / Promo (Energetic & Loud)</option>
+                            <option value="urgent">Urgent / Limited Time (Fast-Paced & Driving)</option>
+                            <option value="premium">Premium / Luxury (Elegant, Deep & Rich)</option>
+                            <option value="whisper">Intimate / Whisper (Breathy & Quiet)</option>
+                        </select>
                     </div>
 
-                    <!-- Download Button -->
-                    <a href="#" id="download-btn" class="download-btn" download>
-                        <span class="btn-icon">📥</span> Download MP3
-                    </a>
-                </div>
+                    <div class="slider-group">
+                        <div class="slider-header">
+                            <span>Emotional Intensity</span>
+                            <span id="intensity-val" class="slider-val">70%</span>
+                        </div>
+                        <input type="range" id="intensity-slider" name="intensity" min="1" max="100" value="70" class="range-slider">
+                    </div>
 
-                <div id="output-state-error" class="output-state error-state hidden-element">
-                    <div class="error-graphic">⚠️</div>
-                    <h3>Generation Failed</h3>
-                    <p id="error-message">An error occurred during audio synthesis.</p>
-                    <button id="retry-btn" class="retry-btn">Try Again</button>
-                </div>
-            </section>
+                    <div class="slider-group">
+                        <div class="slider-header">
+                            <span>Delivery Pacing Speed</span>
+                            <span id="speed-val" class="slider-val">1.0x</span>
+                        </div>
+                        <input type="range" id="speed-slider" name="speed" min="0.5" max="2.0" step="0.1" value="1.0" class="range-slider">
+                    </div>
+
+                    <!-- Voice Cloning Bay -->
+                    <div class="form-group cloning-bay">
+                        <label>Zero-Shot Voice Cloning Bay</label>
+                        <div id="dropzone" class="dropzone-container">
+                            <span class="upload-icon">🎙️</span>
+                            <p class="dropzone-text">Upload 3-10s Reference Voice (.wav/.mp3)</p>
+                            <input type="file" id="voice-ref" name="voice_ref" accept="audio/wav,audio/mp3,audio/mpeg" class="file-input">
+                            <div id="file-info" class="file-info-badge hidden-element"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Section 3: Dynamic Engine Categorization Matrix -->
+                <section class="panel engine-panel">
+                    <h2 class="panel-title"><span class="step-num">3</span> Dynamic Engine Matrix</h2>
+                    <p class="panel-desc">Models automatically filter based on language capabilities.</p>
+                    
+                    <div class="matrix-container">
+                        <!-- Tier 1 -->
+                        <div class="tier-group">
+                            <h3 class="tier-header">Tier 1: Premium Autoregressive Ad Closers</h3>
+                            <div class="engine-options-grid" id="tier1-grid">
+                                <!-- Populated dynamically by JS -->
+                            </div>
+                        </div>
+
+                        <!-- Tier 2 -->
+                        <div class="tier-group">
+                            <h3 class="tier-header">Tier 2: Conversational & Zero-Shot Matchers</h3>
+                            <div class="engine-options-grid" id="tier2-grid">
+                                <!-- Populated dynamically by JS -->
+                            </div>
+                        </div>
+
+                        <!-- Tier 3 -->
+                        <div class="tier-group">
+                            <h3 class="tier-header">Tier 3: Foundations & Web Clients</h3>
+                            <div class="engine-options-grid" id="tier3-grid">
+                                <!-- Populated dynamically by JS -->
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Secret input for selected engine -->
+                    <input type="hidden" id="selected-engine" name="engine" required>
+                </section>
+
+                <!-- Section 4: Master Production Mixing Console -->
+                <section class="panel mixing-panel">
+                    <h2 class="panel-title"><span class="step-num">4</span> Master Production Mixer</h2>
+                    
+                    <div class="mixer-toggle">
+                        <label class="switch">
+                            <input type="checkbox" id="layer-bg-cb" name="layer_bg_cb" checked>
+                            <span class="slider round"></span>
+                        </label>
+                        <span class="switch-label">Layer Commercial Background Jingle Bed</span>
+                    </div>
+
+                    <div id="mixer-controls-wrapper" class="mixer-controls-grid">
+                        <div class="form-group full-width">
+                            <label for="bg-style-select">Background Music Style</label>
+                            <select id="bg-style-select" name="bg_style">
+                                <option value="corporate_luxury" selected>Corporate Luxury (Smooth & Elegant)</option>
+                                <option value="upbeat_pop">Upbeat Pop Promo (High-Energy Drums)</option>
+                                <option value="electronic_loop">Electronic Synth Loop (Modern Techno)</option>
+                                <option value="dramatic_cinematic">Dramatic Cinematic (Epic tom beats & swells)</option>
+                            </select>
+                        </div>
+
+                        <div class="slider-group">
+                            <div class="slider-header">
+                                <span>Voice Track Level</span>
+                                <span id="voice-vol-val" class="slider-val">100%</span>
+                            </div>
+                            <input type="range" id="voice-vol" name="voice_vol" min="0" max="100" value="100" class="range-slider">
+                        </div>
+
+                        <div class="slider-group">
+                            <div class="slider-header">
+                                <span>Background Bed Level</span>
+                                <span id="bg-vol-val" class="slider-val">40%</span>
+                            </div>
+                            <input type="range" id="bg-vol" name="bg_vol" min="0" max="100" value="40" class="range-slider">
+                        </div>
+
+                        <div class="slider-group full-width">
+                            <div class="slider-header">
+                                <span>Dynamic Ducking Threshold</span>
+                                <span id="ducking-val" class="slider-val">-15 dB</span>
+                            </div>
+                            <input type="range" id="ducking-slider" name="ducking" min="0" max="30" value="15" class="range-slider">
+                            <small class="help-text">Increases gain attenuation on music track when voice is active.</small>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Generate Trigger Button -->
+                <button type="submit" id="submit-btn" class="submit-btn glowing-btn">
+                    <span class="btn-text">Render Ad Campaign Audio</span>
+                    <span class="spinner hidden-element"></span>
+                </button>
+            </form>
+
+            <!-- Right Column: Live Output & Engine Log Output -->
+            <div class="output-column-container">
+                <!-- System Output Block -->
+                <section class="panel output-panel">
+                    <h2 class="panel-title">Master Audio Output</h2>
+                    
+                    <div id="output-state-empty" class="output-state">
+                        <div class="empty-graphic">🎚️</div>
+                        <h3>Studio Idle</h3>
+                        <p>Configure script parameters, select engine model from the matrix, and click Render to run speech synthesis.</p>
+                    </div>
+
+                    <div id="output-state-loading" class="output-state hidden-element">
+                        <div class="loading-graphic">
+                            <div class="equalizer-bar bar-1"></div>
+                            <div class="equalizer-bar bar-2"></div>
+                            <div class="equalizer-bar bar-3"></div>
+                            <div class="equalizer-bar bar-4"></div>
+                            <div class="equalizer-bar bar-5"></div>
+                        </div>
+                        <h3>Synthesizing Ad Campaign Voice...</h3>
+                        <p id="loading-status-text">Processing emotional arrays and parsing script. Please wait...</p>
+                        <div id="engine-live-logs" class="live-logs-terminal">
+                            <!-- Realtime simulation of engine logs -->
+                        </div>
+                    </div>
+
+                    <div id="output-state-result" class="output-state hidden-element">
+                        <div class="success-graphic">✨</div>
+                        <h3>Campaign Render Complete</h3>
+                        <p id="result-meta-text">Ad Audio synthesized and mixed successfully.</p>
+                        
+                        <!-- Audio Player -->
+                        <div class="audio-player-wrapper">
+                            <audio id="audio-preview" controls></audio>
+                        </div>
+
+                        <!-- Download Button -->
+                        <a href="#" id="download-btn" class="download-btn glowing-btn" download>
+                            <span class="btn-icon">📥</span> Download Finished Campaign MP3
+                        </a>
+                    </div>
+
+                    <div id="output-state-error" class="output-state error-state hidden-element">
+                        <div class="error-graphic">🚨</div>
+                        <h3>Render Failed</h3>
+                        <p id="error-message">An error occurred during audio synthesis.</p>
+                        <button id="retry-btn" class="retry-btn">Reset Console</button>
+                    </div>
+                </section>
+                
+                <!-- System Status Console -->
+                <section class="panel status-panel">
+                    <h2 class="panel-title">Engine Hardware Status</h2>
+                    <div class="system-status-list">
+                        <div class="status-item">
+                            <span>Processing Core:</span>
+                            <span class="status-active">GPU (CUDA/MPS Accelerators Active)</span>
+                        </div>
+                        <div class="status-item">
+                            <span>Fallback Route:</span>
+                            <span>High-Fidelity Local ONNX fallback enabled</span>
+                        </div>
+                        <div class="status-item">
+                            <span>Model Weights Cache:</span>
+                            <span class="cache-path">F:\huggingface_cache</span>
+                        </div>
+                    </div>
+                </section>
+            </div>
         </main>
 
         <!-- Footer -->
         <footer class="app-footer">
-            <p>SonicSlogan Web Application &bull; Built with Flask &bull; Powered by Bark, Kokoro & Meta MMS</p>
+            <p>AdVocalist Studio Engine Prototype &bull; Built with Flask &bull; Powered by Deep Learning Synthesis Models</p>
         </footer>
     </div>
 
