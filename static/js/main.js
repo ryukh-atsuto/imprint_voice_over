@@ -40,6 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const downloadBtn = document.getElementById('download-btn');
     const retryBtn = document.getElementById('retry-btn');
     const errorMessage = document.getElementById('error-message');
+    const resultMetaText = document.getElementById('result-meta-text');
     const submitBtn = document.getElementById('submit-btn');
 
     // Model Tiers Definition
