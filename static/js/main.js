@@ -183,6 +183,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Form Submit handling with terminal simulation
     generatorForm.addEventListener('submit', async (e) => {
         e.preventDefault();
+        generatorForm.dataset.startTime = Date.now();
 
         const engine = selectedEngineInput.value;
         const text = scriptText.value.trim();
