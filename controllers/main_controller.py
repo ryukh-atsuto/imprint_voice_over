@@ -36,6 +36,8 @@ def generate():
         bg_vol = int(request.form.get('bg_vol', '40'))
         ducking = int(request.form.get('ducking', '15'))
         
+        voice = request.form.get('voice', 'af_bella').strip()
+        
         # Target voice reference file
         voice_ref_file = request.files.get('voice_ref')
     else:
@@ -53,6 +55,7 @@ def generate():
         voice_vol = int(data.get('voice_vol', '100'))
         bg_vol = int(data.get('bg_vol', '40'))
         ducking = int(data.get('ducking', '15'))
+        voice = data.get('voice', 'af_bella').strip()
         voice_ref_file = None
 
     if not text:
@@ -94,7 +97,8 @@ def generate():
             vibe=vibe,
             emotional_intensity=intensity,
             pacing_speed=speed,
-            voice_ref_path=voice_ref_path
+            voice_ref_path=voice_ref_path,
+            voice=voice
         )
         
         # Run background music mixing if requested

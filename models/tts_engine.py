@@ -79,13 +79,20 @@ class TTSEngine:
         else:
             return text, vibe_info["instruction"], vibe_info["speed_modifier"]
 
-    def _execute_fallback_synthesizer(self, text, output_path, speed, language="english"):
+    def _execute_fallback_synthesizer(self, text, output_path, speed, language="english", voice="af_bella"):
         """
         High-fidelity dummy post-processor / fallback synthesizer.
         Uses Kokoro ONNX (for English) or MMS-TTS (for Bangla) to ensure the interface
         remains testable, reactive, and outputs real audio.
         """
-        print(f"[TTSEngine] Falling back to high-fidelity local synthesis. Language: {language}")
+        import re
+        # Clean out paralinguistic expression brackets like [laughs], [excited], etc.
+        # since Kokoro and MMS-TTS do not support them and will read them literally.
+        clean_text = re.sub(r'\[.*?\]', '', text).strip()
+        if not clean_text:
+            clean_text = "AdVocalist audio generation."
+
+        print(f"[TTSEngine] Falling back to high-fidelity local synthesis. Language: {language}, Voice: {voice}")
         if language == "bangla":
             # Run MMS-TTS Bangla
             from transformers import VitsModel, AutoTokenizer
@@ -98,7 +105,7 @@ class TTSEngine:
                 else:
                     tokenizer, model = self._models[model_id]
                 
-                inputs = tokenizer(text, return_tensors="pt").to(self.device)
+                inputs = tokenizer(clean_text, return_tensors="pt").to(self.device)
                 with torch.no_grad():
                     output = model(**inputs).waveform
                     
@@ -132,8 +139,8 @@ class TTSEngine:
                 
             kokoro = self._models[model_key]
             samples, sample_rate = kokoro.create(
-                text,
-                voice="af_bella",
+                clean_text,
+                voice=voice,
                 speed=speed,
                 lang="en-us"
             )
@@ -157,7 +164,7 @@ class TTSEngine:
             seg.export(output_path, format="mp3")
             return output_path
 
-    def generate_voice_generator_com(self, text, output_path):
+    def generate_voice_generator_com(self, text, output_path, voice="af_bella"):
         """
         Scraper / Client fallback API for voice-generator.com.
         """
@@ -174,14 +181,14 @@ class TTSEngine:
         except Exception as e:
             print(f"[TTSEngine] voice-generator.com API call failed or rate-limited: {e}")
         # Graceful fallback to local ONNX
-        return self._execute_fallback_synthesizer(text, output_path, 1.0, "english")
+        return self._execute_fallback_synthesizer(text, output_path, 1.0, "english", voice=voice)
 
-    def generate_ad_campaign(self, text, output_path, model_name, language="english", vibe="corporate", emotional_intensity=70, pacing_speed=1.0, voice_ref_path=None):
+    def generate_ad_campaign(self, text, output_path, model_name, language="english", vibe="corporate", emotional_intensity=70, pacing_speed=1.0, voice_ref_path=None, voice="af_bella"):
         """
         Modular Router and Hardware Fallback engine coordinating Tier 1, 2, and 3 models.
         """
         print(f"\n[TTSEngine] Starting generation for: {model_name} (Language: {language})")
-        print(f"[TTSEngine] Emotional Control: Vibe={vibe.upper()}, Intensity={emotional_intensity}%, Pacing={pacing_speed}x")
+        print(f"[TTSEngine] Emotional Control: Vibe={vibe.upper()}, Intensity={emotional_intensity}%, Pacing={pacing_speed}x, Voice={voice}")
         
         if voice_ref_path:
             print(f"[TTSEngine] Reference Voice Detected: {os.path.basename(voice_ref_path)}")
@@ -205,10 +212,10 @@ class TTSEngine:
         
         # Determine routing logic
         if model_name == "voice-generator.com Client Engine":
-            return self.generate_voice_generator_com(text, output_path)
+            return self.generate_voice_generator_com(text, output_path, voice=voice)
             
         # For other models, check if weight files exist (since they don't, we log fallback and route to dummy post-processors)
         if not local_weights_exist:
             print(f"[TTSEngine] WARNING: Local weights for '{model_name}' are unavailable or GPU memory is restricted.")
             print(f"[TTSEngine] Routing processing array to dummy post-processors...")
-            return self._execute_fallback_synthesizer(text, output_path, target_speed, language)
+            return self._execute_fallback_synthesizer(text, output_path, target_speed, language, voice=voice)

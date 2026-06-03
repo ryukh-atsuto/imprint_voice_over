@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const languageSelect = document.getElementById('language-select');
     const selectedEngineInput = document.getElementById('selected-engine');
     const vibeSelect = document.getElementById('vibe-select');
+    const voiceSelect = document.getElementById('voice-select');
     
     // Sliders & Values
     const intensitySlider = document.getElementById('intensity-slider');
@@ -207,6 +208,7 @@ document.addEventListener('DOMContentLoaded', () => {
         formData.append('language', lang);
         formData.append('engine', engine);
         formData.append('vibe', vibeSelect.value);
+        formData.append('voice', voiceSelect.value);
         formData.append('intensity', intensitySlider.value);
         formData.append('speed', speedSlider.value);
         formData.append('layer_bg', layerBgCb.checked ? 'true' : 'false');
@@ -224,7 +226,7 @@ document.addEventListener('DOMContentLoaded', () => {
             { text: `[SYSTEM] Initiating AdVocalist Studio Engine on ${navigator.platform}...`, delay: 100 },
             { text: `[SYSTEM] Processing script: "${text.substring(0, 30)}..."`, delay: 500 },
             { text: `[EMOTION] Campaign Vibe designated: [${vibeSelect.value.toUpperCase()}]`, delay: 900 },
-            { text: `[EMOTION] Target variables set: Intensity=${intensitySlider.value}%, Pacing=${speedSlider.value}x`, delay: 1300 },
+            { text: `[EMOTION] Target variables set: Intensity=${intensitySlider.value}%, Pacing=${speedSlider.value}x, Voice=${voiceSelect.value}`, delay: 1300 },
             { text: `[ENGINE] Selected Model: "${engine}"`, delay: 1700 }
         ];
 
