@@ -207,6 +207,19 @@ class TTSEngine:
         # Apply emotional pacing speed modifications
         target_speed = pacing_speed * speed_mod
         
+        # Scale speed dynamically based on emotional intensity for non-neutral vibes
+        # Default baseline intensity is 70
+        intensity_diff = (emotional_intensity - 70) / 100.0
+        if vibe in ["excited", "urgent"]:
+            # Higher intensity makes it faster
+            target_speed += (intensity_diff * 0.45)
+        elif vibe in ["premium", "whisper"]:
+            # Higher intensity makes it slower and more deliberate
+            target_speed -= (intensity_diff * 0.35)
+            
+        # Keep speed within hardware safety bounds (0.5x to 2.0x)
+        target_speed = max(0.5, min(2.0, target_speed))
+        
         # Hard check for local model weight paths (dummy fallbacks for unavailable files)
         local_weights_exist = False
         
