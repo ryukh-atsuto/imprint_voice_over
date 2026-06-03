@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slogan & Hook Text-to-Audio (MP3) Generator</title>
+    <!-- Inter Font from Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="logo">
+                <span class="logo-icon">🎙️</span>
+                <h1>SonicSlogan</h1>
+            </div>
+            <p class="subtitle">Generate high-impact audio hooks & slogans with state-of-the-art local TTS engines</p>
+        </header>
+
+        <!-- Main Dashboard Layout -->
+        <main class="dashboard-grid">
+            
+            <!-- Left Panel: Inputs -->
+            <section class="panel input-panel">
+                <h2 class="panel-title">Configuration</h2>
+                
+                <form id="generator-form" class="generator-form">
+                    <!-- Textarea Slogan -->
+                    <div class="form-group">
+                        <label for="slogan-text">Slogan / Hook Text</label>
+                        <textarea 
+                            id="slogan-text" 
+                            name="text" 
+                            rows="4" 
+                            placeholder="Enter your company slogan or hook here... For example: 'Innovating the future, one byte at a time!'"
+                            required></textarea>
+                    </div>
+
+                    <!-- Language Selection -->
+                    <div class="form-group">
+                        <label for="language-select">Language Selection</label>
+                        <select id="language-select" name="language" required>
+                            <option value="" disabled selected>Select Language</option>
+                            <option value="English">English</option>
+                            <option value="Bangla">Bangla</option>
+                        </select>
+                    </div>
+
+                    <!-- Engine Selection (Dynamic) -->
+                    <div class="form-group">
+                        <label for="engine-select">TTS Engine</label>
+                        <select id="engine-select" name="engine" required disabled>
+                            <option value="" disabled selected>Choose language first</option>
+                        </select>
+                    </div>
+
+                    <!-- Dynamic Sub-option: Background Vibe (Only for Kokoro) -->
+                    <div id="vibe-container" class="form-group hidden-element">
+                        <label for="vibe-select">Background Vibe (Music Bed)</label>
+                        <select id="vibe-select" name="background_vibe">
+                            <option value="None">Voice Only (No Background Music)</option>
+                            <option value="Upbeat">Upbeat & Energetic (Stock Loop)</option>
+                            <option value="Chill">Chill & Evolving (Stock Loop)</option>
+                        </select>
+                        <small class="vibe-help">Pydub will overlay and mix the background music with the generated voice.</small>
+                    </div>
+
+                    <!-- Dynamic Sub-option: Voice Preset (Only for Kokoro) -->
+                    <div id="voice-container" class="form-group hidden-element">
+                        <label for="voice-select">Voice Model Style</label>
+                        <select id="voice-select" name="voice">
+                            <option value="af_heart">American Female (Heart - Smooth)</option>
+                            <option value="af_nicole">American Female (Nicole - Expressive)</option>
+                            <option value="am_adam">American Male (Adam - Energetic)</option>
+                            <option value="bf_emma">British Female (Emma - Formal)</option>
+                            <option value="bm_george">British Male (George - Clear)</option>
+                        </select>
+                    </div>
+
+                    <!-- Bark Expression Tags Tip -->
+                    <div id="bark-tip" class="tip-box hidden-element">
+                        <div class="tip-header">
+                            <span class="tip-icon">💡</span>
+                            <strong>Bark Expressive Tags:</strong>
+                        </div>
+                        <p class="tip-content">
+                            You can add expressive and non-verbal cues directly to your text like: 
+                            <code>[laughs]</code>, <code>[clears throat]</code>, <code>[sighs]</code>, <code>[whispers]</code>, or musical notation like <code>♪ jingle ♪</code>.
+                        </p>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" id="submit-btn" class="submit-btn">
+                        <span class="btn-text">Generate Audio (MP3)</span>
+                        <span class="spinner hidden-element"></span>
+                    </button>
+                </form>
+            </section>
+
+            <!-- Right Panel: Outputs -->
+            <section class="panel output-panel">
+                <h2 class="panel-title">Audio Output</h2>
+                
+                <div id="output-state-empty" class="output-state">
+                    <div class="empty-graphic">🎧</div>
+                    <h3>Ready for Generation</h3>
+                    <p>Select your language, write your slogan, and click generate to preview your audio output.</p>
+                </div>
+
+                <div id="output-state-loading" class="output-state hidden-element">
+                    <div class="loading-graphic">
+                        <div class="ripple-wave"></div>
+                        <div class="ripple-wave"></div>
+                        <div class="ripple-wave"></div>
+                    </div>
+                    <h3>Synthesizing Voice...</h3>
+                    <p id="loading-status-text">Using AI models to render your text into professional audio. Please wait...</p>
+                    <div class="warning-alert">
+                        <strong>First run note:</strong> The system may take a few minutes to download Hugging Face model weights (Bark/MMS/Kokoro) to your local cache.
+                    </div>
+                </div>
+
+                <div id="output-state-result" class="output-state hidden-element">
+                    <div class="success-graphic">✅</div>
+                    <h3>Audio Render Complete</h3>
+                    <p id="result-meta-text">Synthesized successfully. Ready to preview and download.</p>
+                    
+                    <!-- Audio Player -->
+                    <div class="audio-player-wrapper">
+                        <audio id="audio-preview" controls></audio>
+                    </div>
+
+                    <!-- Download Button -->
+                    <a href="#" id="download-btn" class="download-btn" download>
+                        <span class="btn-icon">📥</span> Download MP3
+                    </a>
+                </div>
+
+                <div id="output-state-error" class="output-state error-state hidden-element">
+                    <div class="error-graphic">⚠️</div>
+                    <h3>Generation Failed</h3>
+                    <p id="error-message">An error occurred during audio synthesis.</p>
+                    <button id="retry-btn" class="retry-btn">Try Again</button>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <p>SonicSlogan Web Application &bull; Built with Flask &bull; Powered by Bark, Kokoro & Meta MMS</p>
+        </footer>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

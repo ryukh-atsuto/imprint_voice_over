@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+ENV/
+static/output/generated_*.mp3
+static/output/voice_temp_*.mp3
+.idea/
+.vscode/
+.DS_Store
