@@ -13,6 +13,11 @@ for ffmpeg_dir in ffmpeg_dirs:
             os.environ["PATH"] += os.pathsep + ffmpeg_dir
             print("[AudioMixer] Added ffmpeg to PATH:", ffmpeg_dir)
 
+# Explicitly configure AudioSegment paths for maximum reliability on Windows
+AudioSegment.converter = r"F:\text_to_voice\bin\ffmpeg.exe"
+AudioSegment.ffprobe = r"F:\text_to_voice\bin\ffprobe.exe"
+
+
 class AudioMixer:
     @staticmethod
     def pct_to_db(pct):
