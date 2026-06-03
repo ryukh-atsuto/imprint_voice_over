@@ -8,3 +8,4 @@ static/output/voice_temp_*.mp3
 .idea/
 .vscode/
 .DS_Store
+bin/

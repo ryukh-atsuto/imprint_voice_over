@@ -1,4 +1,6 @@
 import os
+os.environ["HF_HOME"] = r"F:\huggingface_cache"
+
 import torch
 import numpy as np
 import scipy.io.wavfile as wavfile
@@ -6,8 +8,8 @@ from pydub import AudioSegment
 
 # Dynamically add local ffmpeg to PATH so pydub can find it
 ffmpeg_dirs = [
-    r"C:\Users\User\AppData\Local\ffmpeg",
-    r"C:\Users\User\AppData\Local\ffmpegio\ffmpeg-downloader\ffmpeg\bin"
+    os.path.abspath(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'bin')),
+    r"F:\text_to_voice\bin"
 ]
 for ffmpeg_dir in ffmpeg_dirs:
     if os.path.exists(ffmpeg_dir):

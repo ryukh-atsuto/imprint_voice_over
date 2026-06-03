@@ -1,4 +1,6 @@
 import os
+os.environ["HF_HOME"] = r"F:\huggingface_cache"
+
 from flask import Flask
 from controllers.main_controller import main_bp
 
