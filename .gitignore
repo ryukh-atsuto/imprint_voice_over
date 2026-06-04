@@ -3,8 +3,8 @@ __pycache__/
 .venv/
 venv/
 ENV/
-static/output/generated_*.mp3
-static/output/voice_temp_*.mp3
+static/output/*
+!static/output/.gitkeep
 .idea/
 .vscode/
 .DS_Store

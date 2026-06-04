@@ -1,7 +1,7 @@
 import os
 import uuid
 import shutil
-from flask import Blueprint, request, jsonify, render_template, url_for, current_app
+from flask import Blueprint, request, jsonify, render_template, url_for, current_app, send_from_directory
 from models.tts_engine import TTSEngine
 from models.audio_mixer import AudioMixer
 
@@ -156,3 +156,10 @@ def secure_filename_fallback(filename):
     """Simple sanitization fallback for uploaded filenames."""
     import re
     return re.sub(r'[^a-zA-Z0-9_.-]', '_', filename)
+
+@main_bp.route('/download/<filename>')
+def download_file(filename):
+    output_dir = os.path.join(current_app.static_folder, 'output')
+    # Prevent directory traversal attacks
+    filename = os.path.basename(filename)
+    return send_from_directory(output_dir, filename, as_attachment=True, download_name=filename)

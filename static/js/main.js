@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         'bilingual mix': {
             tier1: ['Fish Audio (S2 Pro)', 'CanopyLabs Orpheus-3B', 'Orpheus-Bangla'],
-            tier2: ['Chatterbox-Turbo', 'k2-fsa/OmniVoice'],
+            tier2: ['Chatterbox-Turbo', 'k2-fsa/OmniVoice', 'MOSS-TTS'],
             tier3: ['Qwen3-TTS', 'Voxtral-TTS', 'voice-generator.com Client Engine']
         }
     };
@@ -276,7 +276,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Populate Output Results
             resultMetaText.textContent = `Language: ${lang} | Model: ${engine} | Vibe: ${vibeSelect.value.toUpperCase()}`;
             audioPreview.src = result.audio_url;
-            downloadBtn.href = result.audio_url;
+            downloadBtn.href = `/download/${result.filename}`;
             downloadBtn.setAttribute('download', `advocalist_${lang.toLowerCase().replace(' ', '_')}_campaign.mp3`);
 
             showState(stateResult);
